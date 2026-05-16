@@ -11,6 +11,7 @@ from app.api.routes import ai
 from app.api.routes import flashcards
 from app.api.routes import quizzes
 from app.api.routes import chat
+from app.api.routes import websocket
 
 
 Base.metadata.create_all(bind=engine)
@@ -62,6 +63,10 @@ app.include_router(
     chat.router,
     prefix="/api/v1/chat",
     tags=["AI Chat"]
+)
+
+app.include_router(
+    websocket.router
 )
 
 @app.get("/")
