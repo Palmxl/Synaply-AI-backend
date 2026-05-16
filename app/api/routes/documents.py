@@ -13,7 +13,10 @@ from app.db.database import get_db
 
 from app.models.study_document import StudyDocument
 
-from app.services.pdf_service import save_pdf
+from app.services.pdf_service import (
+    save_pdf,
+    extract_text_from_pdf
+)
 
 router = APIRouter()
 
@@ -24,13 +27,18 @@ async def upload_document(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    filename = await save_pdf(file)
+    filename, file_path = await save_pdf(file)
+
+    extracted_text = extract_text_from_pdf(
+        file_path
+    )
 
     document = StudyDocument(
         title=file.filename,
         filename=filename,
         subject="General",
-        owner_id=current_user.id
+        owner_id=current_user.id,
+        content=extracted_text
     )
 
     db.add(document)
@@ -40,7 +48,8 @@ async def upload_document(
     db.refresh(document)
 
     return {
-        "message": "Document uploaded successfully"
+        "message": "Document uploaded successfully",
+        "characters": len(extracted_text)
     }
 
 

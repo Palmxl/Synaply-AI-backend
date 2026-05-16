@@ -8,6 +8,7 @@ from app.db.database import get_db
 from app.schemas.user import (
     UserCreate,
     UserLogin,
+    TokenResponse
 )
 
 from app.services.auth_service import (
@@ -26,7 +27,7 @@ def register(
     return register_user(user, db)
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenResponse)
 def login(
     user: UserLogin,
     db: Session = Depends(get_db)

@@ -3,6 +3,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Text
 
 from datetime import datetime
 
@@ -38,6 +39,11 @@ class StudyDocument(Base):
         ForeignKey("users.id")
     )
 
+    content = Column(
+        Text,
+        nullable=True
+    )
+    
     created_at = Column(
         DateTime,
         default=datetime.utcnow
