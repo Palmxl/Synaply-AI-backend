@@ -5,6 +5,10 @@ from fastapi import Depends
 
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
+
+from app.models.user import User
+
 from app.db.database import get_db
 
 from app.models.study_document import StudyDocument
@@ -17,14 +21,16 @@ router = APIRouter()
 @router.post("/upload")
 async def upload_document(
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     filename = await save_pdf(file)
 
     document = StudyDocument(
         title=file.filename,
         filename=filename,
-        subject="General"
+        subject="General",
+        owner_id=current_user.id
     )
 
     db.add(document)
@@ -40,8 +46,15 @@ async def upload_document(
 
 @router.get("/")
 def get_documents(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    documents = db.query(StudyDocument).all()
+    documents = (
+        db.query(StudyDocument)
+        .filter(
+            StudyDocument.owner_id == current_user().id
+        )
+        .all()
+    )
 
     return documents
