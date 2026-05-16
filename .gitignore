@@ -3,6 +3,16 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# SQLite 
+*.db
+
+# Uploads
+uploads/
+
+# Ollama temp
+chroma_db/
+
+
 # C extensions
 *.so
 

@@ -9,6 +9,7 @@ from app.api.routes import auth
 from app.api.routes import documents
 from app.api.routes import ai
 from app.api.routes import flashcards
+from app.api.routes import quizzes
 
 
 Base.metadata.create_all(bind=engine)
@@ -48,6 +49,12 @@ app.include_router(
     flashcards.router,
     prefix="/api/v1/flashcards",
     tags=["Flashcards"]
+)
+
+app.include_router(
+    quizzes.router,
+    prefix="/api/v1/quizzes",
+    tags=["Quizzes"]
 )
 
 @app.get("/")

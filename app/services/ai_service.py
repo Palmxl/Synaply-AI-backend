@@ -80,3 +80,58 @@ Material:
 
     except:
         return []
+    
+def generate_quiz(
+    content: str
+):
+    truncated_content = content[:2500]
+
+    response = ollama.chat(
+        model="mistral",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Generate 5 multiple choice questions "
+                    "in valid JSON format only."
+                )
+            },
+            {
+                "role": "user",
+                "content": f"""
+Generate a quiz from this study material.
+
+Return ONLY this format:
+
+[
+  {{
+    "question": "...",
+    "option_a": "...",
+    "option_b": "...",
+    "option_c": "...",
+    "option_d": "...",
+    "correct_answer": "A"
+  }}
+]
+
+Material:
+
+{truncated_content}
+"""
+            }
+        ]
+    )
+
+    content_response = (
+        response["message"]["content"]
+    )
+
+    try:
+        quiz = json.loads(
+            content_response
+        )
+
+        return quiz
+
+    except:
+        return []
