@@ -52,7 +52,7 @@ def get_documents(
     documents = (
         db.query(StudyDocument)
         .filter(
-            StudyDocument.owner_id == current_user().id
+            StudyDocument.owner_id == current_user.id
         )
         .all()
     )
