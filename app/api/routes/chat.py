@@ -54,7 +54,7 @@ def document_chat(
         )
 
     answer = chat_with_document(
-        document.content,
+        document.id,
         payload.question
     )
 

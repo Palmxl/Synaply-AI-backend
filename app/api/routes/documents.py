@@ -25,6 +25,10 @@ from app.services.chunk_service import (
     chunk_text
 )
 
+from app.services.vector_service import (
+    add_document_chunk
+)
+
 router = APIRouter()
 
 
@@ -64,6 +68,12 @@ async def upload_document(
         )
 
         db.add(document_chunk)
+
+        add_document_chunk(
+            chunk_id=f"{document.id}_{index}",
+            content=chunk,
+            document_id=document.id
+        )
 
     db.commit()
 

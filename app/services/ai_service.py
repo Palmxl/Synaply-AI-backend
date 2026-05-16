@@ -2,6 +2,10 @@ import ollama
 
 import json
 
+from app.services.vector_service import (
+    search_similar_chunks
+)
+
 def generate_summary(
     content: str
 ):
@@ -138,11 +142,18 @@ Material:
         return []
     
 def chat_with_document(
-    document_content: str,
+    document_id: int,
     question: str
 ):
-    truncated_content = (
-        document_content[:4000]
+    relevant_chunks = (
+        search_similar_chunks(
+            query=question,
+            document_id=document_id
+        )
+    )
+
+    context = "\n\n".join(
+        relevant_chunks
     )
 
     response = ollama.chat(
@@ -152,15 +163,15 @@ def chat_with_document(
                 "role": "system",
                 "content": (
                     "You are an AI study assistant. "
-                    "Answer questions ONLY using the provided study material."
+                    "Answer questions ONLY using the retrieved context."
                 )
             },
             {
                 "role": "user",
                 "content": f"""
-Study Material:
+Context:
 
-{truncated_content}
+{context}
 
 Question:
 {question}
