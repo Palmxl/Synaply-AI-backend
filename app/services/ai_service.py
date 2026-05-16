@@ -110,7 +110,8 @@ Return ONLY this format:
     "option_b": "...",
     "option_c": "...",
     "option_d": "...",
-    "correct_answer": "A"
+    The correct_answer MUST ONLY be:
+    "A", "B", "C", or "D"
   }}
 ]
 
