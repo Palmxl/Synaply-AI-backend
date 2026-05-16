@@ -1,9 +1,15 @@
+import json
+
 from fastapi import APIRouter
 from fastapi import WebSocket
 from fastapi import WebSocketDisconnect
 
 from app.websocket.manager import (
     manager
+)
+
+from app.services.ai_service import (
+    stream_chat_with_document
 )
 
 router = APIRouter()
@@ -19,8 +25,35 @@ async def websocket_chat(
         while True:
             data = await websocket.receive_text()
 
+            payload = json.loads(data)
+
+            document_id = payload[
+                "document_id"
+            ]
+
+            question = payload[
+                "question"
+            ]
+
+            stream = (
+                stream_chat_with_document(
+                    document_id=document_id,
+                    question=question
+                )
+            )
+
+            for chunk in stream:
+                content = chunk["message"][
+                    "content"
+                ]
+
+                await manager.send_message(
+                    content,
+                    websocket
+                )
+
             await manager.send_message(
-                f"AI: {data}",
+                "[DONE]",
                 websocket
             )
 

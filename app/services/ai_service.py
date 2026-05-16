@@ -183,3 +183,45 @@ Question:
     return (
         response["message"]["content"]
     )
+
+def stream_chat_with_document(
+    document_id: int,
+    question: str
+):
+    relevant_chunks = (
+        search_similar_chunks(
+            query=question,
+            document_id=document_id
+        )
+    )
+
+    context = "\n\n".join(
+        relevant_chunks
+    )
+
+    stream = ollama.chat(
+        model="mistral",
+        stream=True,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are an AI study assistant. "
+                    "Answer ONLY using the provided context."
+                )
+            },
+            {
+                "role": "user",
+                "content": f"""
+Context:
+
+{context}
+
+Question:
+{question}
+"""
+            }
+        ]
+    )
+
+    return stream
