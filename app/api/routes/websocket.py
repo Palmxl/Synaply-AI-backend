@@ -47,6 +47,9 @@ async def websocket_chat(
                     "content"
                 ]
 
+                if not content:
+                    continue
+
                 await manager.send_message(
                     content,
                     websocket

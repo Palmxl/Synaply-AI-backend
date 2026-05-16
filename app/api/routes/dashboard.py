@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from collections import defaultdict
 
 from sqlalchemy.orm import Session
 
@@ -97,6 +98,24 @@ def get_dashboard_analytics(
         for activity in activities
     ]
 
+    daily_activity = defaultdict(int)
+
+    for activity in activities:
+        day = (
+            activity.created_at
+            .strftime("%a")
+        )
+
+        daily_activity[day] += 1
+
+    activity_chart = [
+        {
+            "day": day,
+            "activity": count
+        }
+        for day, count in daily_activity.items()
+    ]
+
     return {
         "total_documents":
             total_documents,
@@ -111,5 +130,8 @@ def get_dashboard_analytics(
             total_chat_messages,
 
         "recent_activity":
-            recent_activity
+            recent_activity,
+
+        "activity_chart":
+            activity_chart
     }
