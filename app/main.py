@@ -6,6 +6,7 @@ from app.db.database import Base
 from app.db.database import engine
 
 from app.api.routes import auth
+from app.api.routes import documents
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,6 +27,12 @@ app.include_router(
     auth.router,
     prefix="/api/v1/auth",
     tags=["Authentication"]
+)
+
+app.include_router(
+    documents.router,
+    prefix="/api/v1/documents",
+    tags=["Documents"]
 )
 
 
