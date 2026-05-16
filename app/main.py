@@ -12,6 +12,7 @@ from app.api.routes import flashcards
 from app.api.routes import quizzes
 from app.api.routes import chat
 from app.api.routes import websocket
+from app.api.routes import dashboard
 
 
 Base.metadata.create_all(bind=engine)
@@ -67,6 +68,12 @@ app.include_router(
 
 app.include_router(
     websocket.router
+)
+
+app.include_router(
+    dashboard.router,
+    prefix="/api/v1/dashboard",
+    tags=["Dashboard"]
 )
 
 @app.get("/")

@@ -12,7 +12,7 @@ def generate_summary(
     truncated_content = content[:2500]
 
     response = ollama.chat(
-        model="mistral",
+        model="phi3",
         messages=[
             {
                 "role": "system",
@@ -39,7 +39,7 @@ def generate_flashcards(
     truncated_content = content[:2500]
 
     response = ollama.chat(
-        model="mistral",
+        model="phi3",
         messages=[
             {
                 "role": "system",
@@ -91,7 +91,7 @@ def generate_quiz(
     truncated_content = content[:2500]
 
     response = ollama.chat(
-        model="mistral",
+        model="phi3",
         messages=[
             {
                 "role": "system",
@@ -157,7 +157,7 @@ def chat_with_document(
     )
 
     response = ollama.chat(
-        model="mistral",
+        model="phi3",
         messages=[
             {
                 "role": "system",
@@ -200,7 +200,7 @@ def stream_chat_with_document(
     )
 
     stream = ollama.chat(
-        model="mistral",
+        model="phi3",
         stream=True,
         messages=[
             {

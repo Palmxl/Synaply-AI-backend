@@ -22,6 +22,7 @@ from app.core.dependencies import (
     get_current_user
 )
 
+from app.services.activity_service import log_activity
 from app.services.ai_service import (
     generate_quiz
 )
@@ -82,6 +83,13 @@ def generate_document_quiz(
         db.add(quiz_question)
 
     db.commit()
+
+    log_activity(
+        db=db,
+        owner_id=current_user.id,
+        action="generate_quiz",
+        description=f"Generated quiz for {document.title}"
+    )
 
     return {
         "message": "Quiz generated"

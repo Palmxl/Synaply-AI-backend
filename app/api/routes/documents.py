@@ -29,6 +29,10 @@ from app.services.vector_service import (
     add_document_chunk
 )
 
+from app.services.activity_service import (
+    log_activity
+)
+
 router = APIRouter()
 
 
@@ -77,6 +81,13 @@ async def upload_document(
 
     db.commit()
 
+    log_activity(
+        db=db,
+        owner_id=current_user.id,
+        action="upload_document",
+        description=f"Uploaded {file.filename}"
+    )
+    
     return {
         "message": "Document uploaded successfully",
         "characters": len(extracted_text),

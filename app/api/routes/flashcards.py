@@ -18,6 +18,7 @@ from app.core.dependencies import (
     get_current_user
 )
 
+from app.services.activity_service import log_activity
 from app.services.ai_service import (
     generate_flashcards
 )
@@ -69,6 +70,13 @@ def generate_document_flashcards(
         )
 
     db.commit()
+
+    log_activity(
+        db=db,
+        owner_id=current_user.id,
+        action="generate_flashcards",
+        description=f"Generated flashcards for {document.title}"
+    )
 
     return {
         "message": "Flashcards generated",

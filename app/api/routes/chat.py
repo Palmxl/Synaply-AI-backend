@@ -24,6 +24,7 @@ from app.schemas.chat import (
     ChatRequest
 )
 
+from app.services.activity_service import log_activity
 from app.services.ai_service import (
     chat_with_document
 )
@@ -77,6 +78,13 @@ def document_chat(
 
     db.commit()
 
+    log_activity(
+        db=db,
+        owner_id=current_user.id,
+        action="chat_message",
+        description=f"Asked AI about {document.title}"
+    )
+    
     return {
         "answer": answer
     }
