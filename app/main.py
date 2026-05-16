@@ -7,8 +7,9 @@ from app.db.database import engine
 
 from app.api.routes import auth
 from app.api.routes import documents
-
 from app.api.routes import ai
+from app.api.routes import flashcards
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -41,6 +42,12 @@ app.include_router(
     ai.router,
     prefix="/api/v1/ai",
     tags=["AI"]
+)
+
+app.include_router(
+    flashcards.router,
+    prefix="/api/v1/flashcards",
+    tags=["Flashcards"]
 )
 
 @app.get("/")
