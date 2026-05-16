@@ -1,10 +1,14 @@
-import ollama
-
 import json
+
+import ollama
 
 from app.services.vector_service import (
     search_similar_chunks
 )
+
+
+MODEL_NAME = "phi3"
+
 
 def generate_summary(
     content: str
@@ -12,13 +16,16 @@ def generate_summary(
     truncated_content = content[:2500]
 
     response = ollama.chat(
-        model="phi3",
+        model=MODEL_NAME,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "You are an AI study assistant. "
-                    "Generate concise educational summaries."
+                    "You are an AI study assistant.\n"
+                    "Generate concise and easy-to-understand educational summaries.\n"
+                    "Avoid repetition.\n"
+                    "Use short paragraphs.\n"
+                    "Keep the response focused."
                 )
             },
             {
@@ -33,28 +40,30 @@ def generate_summary(
 
     return response["message"]["content"]
 
+
 def generate_flashcards(
     content: str
 ):
     truncated_content = content[:2500]
 
     response = ollama.chat(
-        model="phi3",
+        model=MODEL_NAME,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "Generate 5 educational flashcards "
-                    "in JSON format. "
-                    "Return ONLY valid JSON."
+                    "You are an AI study assistant.\n"
+                    "Generate educational flashcards.\n"
+                    "Return ONLY valid JSON.\n"
+                    "Do not add explanations or markdown."
                 )
             },
             {
                 "role": "user",
                 "content": f"""
-Generate flashcards from this material.
+Generate 5 flashcards from this study material.
 
-Return this format ONLY:
+Return ONLY this format:
 
 [
   {{
@@ -75,52 +84,63 @@ Material:
         response["message"]["content"]
     )
 
+    cleaned_response = (
+        content_response
+        .replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
+
     try:
         flashcards = json.loads(
-            content_response
+            cleaned_response
         )
 
         return flashcards
 
-    except:
+    except Exception as e:
+        print(e)
+
         return []
-    
+
+
 def generate_quiz(
     content: str
 ):
-    truncated_content = content[:2500]
+    truncated_content = content[:1500]
 
     response = ollama.chat(
-        model="phi3",
+        model=MODEL_NAME,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "Generate 5 multiple choice questions "
-                    "in valid JSON format only."
+                    "Return ONLY valid JSON.\n"
+                    "No markdown.\n"
+                    "No explanations.\n"
+                    "No extra text.\n"
+                    "Output must be a JSON array."
                 )
             },
             {
                 "role": "user",
                 "content": f"""
-Generate a quiz from this study material.
+Create 3 quiz questions from this text.
 
-Return ONLY this format:
+Format:
 
 [
   {{
-    "question": "...",
-    "option_a": "...",
-    "option_b": "...",
-    "option_c": "...",
-    "option_d": "...",
-    The correct_answer MUST ONLY be:
-    "A", "B", "C", or "D"
+    "question": "Question here",
+    "option_a": "Option A",
+    "option_b": "Option B",
+    "option_c": "Option C",
+    "option_d": "Option D",
+    "correct_answer": "A"
   }}
 ]
 
-Material:
-
+Text:
 {truncated_content}
 """
             }
@@ -131,16 +151,26 @@ Material:
         response["message"]["content"]
     )
 
+    cleaned_response = (
+        content_response
+        .replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
+
     try:
         quiz = json.loads(
-            content_response
+            cleaned_response
         )
 
         return quiz
 
-    except:
+    except Exception as e:
+        print(e)
+
         return []
-    
+
+
 def chat_with_document(
     document_id: int,
     question: str
@@ -157,13 +187,17 @@ def chat_with_document(
     )
 
     response = ollama.chat(
-        model="phi3",
+        model=MODEL_NAME,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "You are an AI study assistant. "
-                    "Answer questions ONLY using the retrieved context."
+                    "You are an AI study assistant.\n"
+                    "Answer ONLY using the provided context.\n"
+                    "Be concise and clear.\n"
+                    "Do not repeat information.\n"
+                    "Use short paragraphs.\n"
+                    "If the answer is not in the context, say you do not know."
                 )
             },
             {
@@ -175,6 +209,8 @@ Context:
 
 Question:
 {question}
+
+Answer:
 """
             }
         ]
@@ -183,6 +219,7 @@ Question:
     return (
         response["message"]["content"]
     )
+
 
 def stream_chat_with_document(
     document_id: int,
@@ -200,14 +237,19 @@ def stream_chat_with_document(
     )
 
     stream = ollama.chat(
-        model="phi3",
+        model=MODEL_NAME,
         stream=True,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "You are an AI study assistant. "
-                    "Answer ONLY using the provided context."
+                    "You are an AI study assistant.\n"
+                    "Answer ONLY using the provided context.\n"
+                    "Be concise and clear.\n"
+                    "Do not repeat information.\n"
+                    "Use short paragraphs.\n"
+                    "Only answer what the user asked.\n"
+                    "If the answer is not in the context, say you do not know."
                 )
             },
             {
@@ -219,6 +261,8 @@ Context:
 
 Question:
 {question}
+
+Answer:
 """
             }
         ]

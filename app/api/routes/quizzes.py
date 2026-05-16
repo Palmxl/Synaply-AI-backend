@@ -92,9 +92,24 @@ def generate_document_quiz(
     )
 
     return {
-        "message": "Quiz generated"
+        "message": "Quiz generated",
+        "quiz_id": quiz.id,
     }
 
+@router.get("/")
+def get_user_quizzes(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    quizzes = (
+        db.query(Quiz)
+        .filter(
+            Quiz.owner_id == current_user.id
+        )
+        .all()
+    )
+
+    return quizzes
 
 @router.get("/{quiz_id}")
 def get_quiz(
