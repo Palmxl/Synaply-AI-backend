@@ -8,6 +8,8 @@ from app.db.database import engine
 from app.api.routes import auth
 from app.api.routes import documents
 
+from app.api.routes import ai
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -35,6 +37,11 @@ app.include_router(
     tags=["Documents"]
 )
 
+app.include_router(
+    ai.router,
+    prefix="/api/v1/ai",
+    tags=["AI"]
+)
 
 @app.get("/")
 def root():
