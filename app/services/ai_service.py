@@ -4,10 +4,10 @@ import ollama
 def generate_summary(
     content: str
 ):
-    truncated_content = content[:12000]
+    truncated_content = content[:2500]
 
     response = ollama.chat(
-        model="llama3",
+        model="mistral",
         messages=[
             {
                 "role": "system",
