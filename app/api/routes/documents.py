@@ -12,10 +12,17 @@ from app.models.user import User
 from app.db.database import get_db
 
 from app.models.study_document import StudyDocument
+from app.models.document_chunk import (
+    DocumentChunk
+)
 
 from app.services.pdf_service import (
     save_pdf,
     extract_text_from_pdf
+)
+
+from app.services.chunk_service import (
+    chunk_text
 )
 
 router = APIRouter()
@@ -33,6 +40,8 @@ async def upload_document(
         file_path
     )
 
+    chunks = chunk_text(extracted_text)
+
     document = StudyDocument(
         title=file.filename,
         filename=filename,
@@ -47,9 +56,21 @@ async def upload_document(
 
     db.refresh(document)
 
+    for index, chunk in enumerate(chunks):
+        document_chunk = DocumentChunk(
+            content=chunk,
+            chunk_index=index,
+            document_id=document.id
+        )
+
+        db.add(document_chunk)
+
+    db.commit()
+
     return {
         "message": "Document uploaded successfully",
-        "characters": len(extracted_text)
+        "characters": len(extracted_text),
+        "chunks": len(chunks)
     }
 
 
