@@ -10,6 +10,7 @@ from app.api.routes import documents
 from app.api.routes import ai
 from app.api.routes import flashcards
 from app.api.routes import quizzes
+from app.api.routes import chat
 
 
 Base.metadata.create_all(bind=engine)
@@ -55,6 +56,12 @@ app.include_router(
     quizzes.router,
     prefix="/api/v1/quizzes",
     tags=["Quizzes"]
+)
+
+app.include_router(
+    chat.router,
+    prefix="/api/v1/chat",
+    tags=["AI Chat"]
 )
 
 @app.get("/")

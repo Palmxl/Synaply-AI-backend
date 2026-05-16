@@ -136,3 +136,39 @@ Material:
 
     except:
         return []
+    
+def chat_with_document(
+    document_content: str,
+    question: str
+):
+    truncated_content = (
+        document_content[:4000]
+    )
+
+    response = ollama.chat(
+        model="mistral",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are an AI study assistant. "
+                    "Answer questions ONLY using the provided study material."
+                )
+            },
+            {
+                "role": "user",
+                "content": f"""
+Study Material:
+
+{truncated_content}
+
+Question:
+{question}
+"""
+            }
+        ]
+    )
+
+    return (
+        response["message"]["content"]
+    )
