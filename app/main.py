@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from fastapi.middleware.cors import (
+    CORSMiddleware
+)
 
-from app.db.database import Base
-from app.db.database import engine
+from app.db.database import (
+    Base,
+    engine
+)
 
 from app.api.routes import auth
 from app.api.routes import documents
@@ -80,6 +83,7 @@ app.include_router(
     prefix="/api/v1/dashboard",
     tags=["Dashboard"]
 )
+
 
 @app.get("/")
 def root():
