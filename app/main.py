@@ -27,6 +27,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "https://synaply-ai-frontend.vercel.app",
+        "https://palmxl.github.io",
     ],
     allow_credentials=True,
     allow_methods=["*"],
