@@ -1,13 +1,20 @@
 import json
+import os
 
-import ollama
+from openai import OpenAI
 
 from app.services.vector_service import (
     search_similar_chunks
 )
 
 
-MODEL_NAME = "phi3"
+MODEL_NAME = "gpt-4.1-mini"
+
+client = OpenAI(
+    api_key=os.getenv(
+        "OPENAI_API_KEY"
+    )
+)
 
 
 def generate_summary(
@@ -15,7 +22,7 @@ def generate_summary(
 ):
     truncated_content = content[:2500]
 
-    response = ollama.chat(
+    response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[
             {
@@ -38,7 +45,12 @@ def generate_summary(
         ]
     )
 
-    return response["message"]["content"]
+    return (
+        response
+        .choices[0]
+        .message
+        .content
+    )
 
 
 def generate_flashcards(
@@ -46,16 +58,16 @@ def generate_flashcards(
 ):
     truncated_content = content[:2500]
 
-    response = ollama.chat(
+    response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "You are an AI study assistant.\n"
-                    "Generate educational flashcards.\n"
                     "Return ONLY valid JSON.\n"
-                    "Do not add explanations or markdown."
+                    "No markdown.\n"
+                    "No explanations.\n"
+                    "Output must be a JSON array."
                 )
             },
             {
@@ -63,7 +75,7 @@ def generate_flashcards(
                 "content": f"""
 Generate 5 flashcards from this study material.
 
-Return ONLY this format:
+Format:
 
 [
   {{
@@ -81,7 +93,10 @@ Material:
     )
 
     content_response = (
-        response["message"]["content"]
+        response
+        .choices[0]
+        .message
+        .content
     )
 
     cleaned_response = (
@@ -109,7 +124,7 @@ def generate_quiz(
 ):
     truncated_content = content[:1500]
 
-    response = ollama.chat(
+    response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[
             {
@@ -125,7 +140,7 @@ def generate_quiz(
             {
                 "role": "user",
                 "content": f"""
-Create 3 quiz questions from this text.
+Create 5 quiz questions from this text.
 
 Format:
 
@@ -148,7 +163,10 @@ Text:
     )
 
     content_response = (
-        response["message"]["content"]
+        response
+        .choices[0]
+        .message
+        .content
     )
 
     cleaned_response = (
@@ -186,7 +204,7 @@ def chat_with_document(
         relevant_chunks
     )
 
-    response = ollama.chat(
+    response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[
             {
@@ -217,7 +235,10 @@ Answer:
     )
 
     return (
-        response["message"]["content"]
+        response
+        .choices[0]
+        .message
+        .content
     )
 
 
@@ -236,7 +257,7 @@ def stream_chat_with_document(
         relevant_chunks
     )
 
-    stream = ollama.chat(
+    stream = client.chat.completions.create(
         model=MODEL_NAME,
         stream=True,
         messages=[
